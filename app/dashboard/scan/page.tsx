@@ -49,58 +49,58 @@ const SAMPLE_PRESETS: {
   dosageForm: string;
   confidence: number;
 }[] = [
-  {
-    key: "crocin",
-    name: "Crocin 650 (Blister Strip)",
-    desc: "Single-agent antipyretic blister strip",
-    brand: "Crocin 650",
-    salts: [{ name: "Paracetamol", strength: "650mg", amountMg: 650 }],
-    dosageForm: "Tablet",
-    confidence: 99.2,
-  },
-  {
-    key: "combiflam",
-    name: "Combiflam (Dual-Action Blister)",
-    desc: "Combination pain & fever tablet",
-    brand: "Combiflam",
-    salts: [
-      { name: "Ibuprofen", strength: "400mg", amountMg: 400 },
-      { name: "Paracetamol", strength: "325mg", amountMg: 325 },
-    ],
-    dosageForm: "Tablet",
-    confidence: 98.4,
-  },
-  {
-    key: "amoxyclav",
-    name: "Amoxyclav 625 (Capsule Box)",
-    desc: "Antibacterial co-formulation",
-    brand: "Amoxyclav 625",
-    salts: [
-      { name: "Amoxicillin", strength: "500mg", amountMg: 500 },
-      { name: "Clavulanic Acid", strength: "125mg", amountMg: 125 },
-    ],
-    dosageForm: "Tablet",
-    confidence: 97.5,
-  },
-  {
-    key: "aspirin",
-    name: "Ecosprin 75 (Cardio Strip)",
-    desc: "Low-dose antiplatelet formulation",
-    brand: "Ecosprin 75",
-    salts: [{ name: "Aspirin", strength: "75mg", amountMg: 75 }],
-    dosageForm: "Tablet",
-    confidence: 96.8,
-  },
-  {
-    key: "abraded",
-    name: "Foil Strip (Surface Faded)",
-    desc: "Simulate unreadable packaging error",
-    brand: "Generic Analgesic",
-    salts: [{ name: "Unverified Salt", strength: "Ambiguous", amountMg: 0 }],
-    dosageForm: "Capsule",
-    confidence: 54.0,
-  },
-];
+    {
+      key: "crocin",
+      name: "Crocin 650 (Blister Strip)",
+      desc: "Single-agent antipyretic blister strip",
+      brand: "Crocin 650",
+      salts: [{ name: "Paracetamol", strength: "650mg", amountMg: 650 }],
+      dosageForm: "Tablet",
+      confidence: 99.2,
+    },
+    {
+      key: "combiflam",
+      name: "Combiflam (Dual-Action Blister)",
+      desc: "Combination pain & fever tablet",
+      brand: "Combiflam",
+      salts: [
+        { name: "Ibuprofen", strength: "400mg", amountMg: 400 },
+        { name: "Paracetamol", strength: "325mg", amountMg: 325 },
+      ],
+      dosageForm: "Tablet",
+      confidence: 98.4,
+    },
+    {
+      key: "amoxyclav",
+      name: "Amoxyclav 625 (Capsule Box)",
+      desc: "Antibacterial co-formulation",
+      brand: "Amoxyclav 625",
+      salts: [
+        { name: "Amoxicillin", strength: "500mg", amountMg: 500 },
+        { name: "Clavulanic Acid", strength: "125mg", amountMg: 125 },
+      ],
+      dosageForm: "Tablet",
+      confidence: 97.5,
+    },
+    {
+      key: "aspirin",
+      name: "Ecosprin 75 (Cardio Strip)",
+      desc: "Low-dose antiplatelet formulation",
+      brand: "Ecosprin 75",
+      salts: [{ name: "Aspirin", strength: "75mg", amountMg: 75 }],
+      dosageForm: "Tablet",
+      confidence: 96.8,
+    },
+    {
+      key: "abraded",
+      name: "Foil Strip (Surface Faded)",
+      desc: "Simulate unreadable packaging error",
+      brand: "Generic Analgesic",
+      salts: [{ name: "Unverified Salt", strength: "Ambiguous", amountMg: 0 }],
+      dosageForm: "Capsule",
+      confidence: 54.0,
+    },
+  ];
 
 export default function ScanMedicinesPage() {
   const { language } = useLanguage();
@@ -312,54 +312,46 @@ export default function ScanMedicinesPage() {
         return;
       }
     } catch (err: any) {
-      console.warn("FastAPI backend upload unavailable, using client-side fallback:", err.message);
+      console.warn("Scan upload failed:", err.message);
+
+      // Only allow sample preset fallback if EVERY image in queue is an explicit sample preset
+      const allArePresets = uploadedImages.every((img) => img.source === "sample" && img.samplePresetKey);
+      if (allArePresets) {
+        const candidates: MedicineRecord[] = uploadedImages.map((img, idx) => {
+          const preset = SAMPLE_PRESETS.find((p) => p.key === img.samplePresetKey);
+          return {
+            id: `cand-${idx + 1}-${Date.now()}`,
+            brandName: preset ? preset.brand : "Crocin 650",
+            genericName: preset ? `${preset.brand} Formulation` : "Paracetamol",
+            activeIngredients: preset ? preset.salts : [{ name: "Paracetamol", strength: "650mg", amountMg: 650 }],
+            strength: preset ? preset.salts.map((s) => s.strength).join(" + ") : "650 mg",
+            dosageForm: preset ? preset.dosageForm : "Tablet",
+            confidence: preset ? preset.confidence : 99.0,
+            verificationStatus: "unconfirmed",
+            dateAdded: new Date().toISOString().replace("T", " ").substring(0, 16),
+            packagingImageUrl: img.previewUrl,
+            scanSource: img.source,
+          };
+        });
+        setCandidateMedicines(candidates);
+        setIsProcessingOcr(false);
+        setStage("verify");
+        return;
+      }
+
+      // If user uploaded an image and analysis failed: SHOW CLEAR ERROR STATE, NEVER SILENT FALLBACK!
+      setIsProcessingOcr(false);
+      const msg =
+        err?.message && err.message.includes("couldn't read this label")
+          ? "We couldn't read this label. Try a clearer photo or try again."
+          : err?.message || "We couldn't read this label. Try a clearer photo or try again.";
+      setErrorMessage(msg);
+      return;
     }
 
-    // Client-side fallback if backend server is offline
-    setTimeout(() => {
-      const candidates: MedicineRecord[] = uploadedImages.map((img, idx) => {
-        const preset = SAMPLE_PRESETS.find((p) => p.key === img.samplePresetKey);
-        if (preset) {
-          return {
-            id: `cand-${idx + 1}-${Date.now()}`,
-            brandName: preset.brand,
-            genericName: `${preset.brand} Formulation`,
-            activeIngredients: preset.salts,
-            strength: preset.salts.map((s) => s.strength).join(" + "),
-            dosageForm: preset.dosageForm,
-            confidence: preset.confidence,
-            verificationStatus: "unconfirmed",
-            dateAdded: new Date().toISOString().replace("T", " ").substring(0, 16),
-            packagingImageUrl: img.previewUrl,
-            scanSource: img.source,
-          };
-        } else {
-          return {
-            id: `cand-${idx + 1}-${Date.now()}`,
-            brandName: idx === 0 ? "Crocin 650" : "Combiflam",
-            genericName: idx === 0 ? "Paracetamol Tablet" : "Ibuprofen + Paracetamol",
-            activeIngredients:
-              idx === 0
-                ? [{ name: "Paracetamol", strength: "650mg", amountMg: 650 }]
-                : [
-                    { name: "Ibuprofen", strength: "400mg", amountMg: 400 },
-                    { name: "Paracetamol", strength: "325mg", amountMg: 325 },
-                  ],
-            strength: idx === 0 ? "650 mg" : "400 mg + 325 mg",
-            dosageForm: "Tablet",
-            confidence: 98.7,
-            verificationStatus: "unconfirmed",
-            dateAdded: new Date().toISOString().replace("T", " ").substring(0, 16),
-            packagingImageUrl: img.previewUrl,
-            scanSource: img.source,
-          };
-        }
-      });
-
-      setCandidateMedicines(candidates);
-      setIsProcessingOcr(false);
-      setStage("verify");
-    }, 1200);
+    // Backend returned empty response
+    setIsProcessingOcr(false);
+    setErrorMessage("We couldn't read this label. Try a clearer photo or try again.");
   };
 
   // Verification Updates (Candidate editing)
@@ -494,33 +486,29 @@ export default function ScanMedicinesPage() {
       <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between overflow-x-auto text-xs font-semibold">
         <div className="flex items-center gap-3 shrink-0">
           <span
-            className={`px-3 py-1 rounded-full ${
-              stage === "upload" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
-            }`}
+            className={`px-3 py-1 rounded-full ${stage === "upload" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
+              }`}
           >
             1. Ingest Packaging
           </span>
           <span className="text-slate-300">/</span>
           <span
-            className={`px-3 py-1 rounded-full ${
-              stage === "verify" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
-            }`}
+            className={`px-3 py-1 rounded-full ${stage === "verify" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
+              }`}
           >
             2. Verify Extracted Details
           </span>
           <span className="text-slate-300">/</span>
           <span
-            className={`px-3 py-1 rounded-full ${
-              stage === "checking" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
-            }`}
+            className={`px-3 py-1 rounded-full ${stage === "checking" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
+              }`}
           >
             3. Deterministic Safety Check
           </span>
           <span className="text-slate-300">/</span>
           <span
-            className={`px-3 py-1 rounded-full ${
-              stage === "results" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
-            }`}
+            className={`px-3 py-1 rounded-full ${stage === "results" ? "bg-slate-900 text-white font-bold" : "bg-slate-100 text-slate-600"
+              }`}
           >
             4. Structured Safety Report
           </span>
@@ -762,11 +750,10 @@ export default function ScanMedicinesPage() {
                 return (
                   <div
                     key={cand.id}
-                    className={`p-5 rounded-xl border transition-all ${
-                      isVerified
+                    className={`p-5 rounded-xl border transition-all ${isVerified
                         ? "border-emerald-300 bg-emerald-50/20"
                         : "border-amber-300 bg-amber-50/20"
-                    }`}
+                      }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2 mb-4">
                       <div className="flex items-center gap-3">
@@ -774,11 +761,10 @@ export default function ScanMedicinesPage() {
                           {cand.brandName}
                         </span>
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${
-                            isVerified
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${isVerified
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-amber-100 text-amber-800"
-                          }`}
+                            }`}
                         >
                           {isVerified ? "Confirmed by You" : "Needs Your Confirmation"}
                         </span>
@@ -954,24 +940,22 @@ export default function ScanMedicinesPage() {
         <div className="space-y-6">
           {/* Status Header Banner */}
           <div
-            className={`p-6 lg:p-8 rounded-2xl border ${
-              currentReport.status === "risk_detected"
+            className={`p-6 lg:p-8 rounded-2xl border ${currentReport.status === "risk_detected"
                 ? "border-rose-300 bg-rose-50/70"
                 : currentReport.status === "no_known_issue"
-                ? "border-emerald-300 bg-emerald-50/70"
-                : "border-amber-300 bg-amber-50/70"
-            }`}
+                  ? "border-emerald-300 bg-emerald-50/70"
+                  : "border-amber-300 bg-amber-50/70"
+              }`}
           >
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                    currentReport.status === "risk_detected"
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${currentReport.status === "risk_detected"
                       ? "bg-rose-200 text-rose-800"
                       : currentReport.status === "no_known_issue"
-                      ? "bg-emerald-200 text-emerald-800"
-                      : "bg-amber-200 text-amber-800"
-                  }`}
+                        ? "bg-emerald-200 text-emerald-800"
+                        : "bg-amber-200 text-amber-800"
+                    }`}
                 >
                   {currentReport.status === "risk_detected" ? (
                     <ShieldAlert className="w-6 h-6" />
@@ -988,19 +972,18 @@ export default function ScanMedicinesPage() {
                       Report ID: {currentReport.id}
                     </span>
                     <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                        currentReport.status === "risk_detected"
+                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${currentReport.status === "risk_detected"
                           ? "bg-rose-200 text-rose-900"
                           : currentReport.status === "no_known_issue"
-                          ? "bg-emerald-200 text-emerald-900"
-                          : "bg-amber-200 text-amber-900"
-                      }`}
+                            ? "bg-emerald-200 text-emerald-900"
+                            : "bg-amber-200 text-amber-900"
+                        }`}
                     >
                       {currentReport.status === "risk_detected"
                         ? "Potential Risk Detected"
                         : currentReport.status === "no_known_issue"
-                        ? "No Known Conflict Found"
-                        : "Verification Incomplete"}
+                          ? "No Known Conflict Found"
+                          : "Verification Incomplete"}
                     </span>
                   </div>
 
@@ -1008,16 +991,16 @@ export default function ScanMedicinesPage() {
                     {currentReport.status === "risk_detected"
                       ? "Potential Medication Concern Identified"
                       : currentReport.status === "no_known_issue"
-                      ? "No Known Issues Found in Completed Checks"
-                      : "Verification Incomplete: Missing Information"}
+                        ? "No Known Issues Found in Completed Checks"
+                        : "Verification Incomplete: Missing Information"}
                   </h3>
 
                   <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
                     {currentReport.status === "risk_detected"
                       ? "A configured deterministic safety rule flagged a duplicate ingredient or interaction concern. Review the clinical explanation below."
                       : currentReport.status === "no_known_issue"
-                      ? "No matching issue was found in the supported checks that were completed. This does not guarantee that the combination is completely safe."
-                      : "Some required details could not be verified. DawaLens does not calculate safety rules on ambiguous or unconfirmed active ingredients."}
+                        ? "No matching issue was found in the supported checks that were completed. This does not guarantee that the combination is completely safe."
+                        : "Some required details could not be verified. DawaLens does not calculate safety rules on ambiguous or unconfirmed active ingredients."}
                   </p>
                 </div>
               </div>

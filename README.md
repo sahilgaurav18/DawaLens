@@ -134,4 +134,10 @@ Key configuration options in `.env`:
 
 ## 📜 License
 
-Licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for full details.
+
+Copyright (c) 2026 DawaLens Contributors.
+
+### Third-Party Licenses & Attributions
+- **Libraries & Frameworks**: Third-party dependencies (including Next.js, React, FastAPI, Pydantic, SQLAlchemy, Radix UI, Tailwind CSS, and Lucide icons) remain the property of their respective copyright holders and are subject to their respective open-source licenses (MIT, Apache-2.0, BSD-3-Clause, ISC).
+- **Clinical Data**: Pharmacological compendia facts (National Formulary of India [NFI 2024], CDSCO safety guidelines, and WHO Model List of Essential Medicines) are referenced for public clinical safety and informational purposes under their respective official publications.

@@ -227,8 +227,8 @@ const FAQS = [
   {
     q: "Are my scanned medication images stored on public servers?",
     qHi: "क्या मेरे द्वारा अपलोड की गई तस्वीरें किसी पब्लिक सर्वर पर सेव होती हैं?",
-    a: "No. DawaLens processes packaging images client-side for character recognition and does not retain permanent image copies on external servers unless you explicitly grant storage permission. You can delete all local records at any time in Settings.",
-    aHi: "नहीं। आपकी तस्वीरें केवल टेक्स्ट पढ़ने के लिए अस्थायी रूप से प्रोसेस होती हैं। सेटिंग्स में जाकर आप कभी भी अपना डेटा पूरी तरह डिलीट कर सकते हैं।",
+    a: "No. DawaLens processes packaging images client-side for character recognition and does not retain permanent image copies on external servers. You maintain full privacy over all your medication records.",
+    aHi: "नहीं। आपकी तस्वीरें केवल टेक्स्ट पढ़ने के लिए अस्थायी रूप से प्रोसेस होती हैं। आपकी दवाओं का विवरण पूरी तरह से सुरक्षित और गोपनीय रहता है।",
   },
 ];
 

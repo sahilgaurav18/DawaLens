@@ -24,6 +24,16 @@ export const metadata: Metadata = {
   title: 'DawaLens — AI-Assisted Medication Safety',
   description: 'Understand your medicines and check for potential medication risks with AI-assisted identification and evidence-based safety checks.',
   generator: 'DawaLens',
+  icons: {
+    icon: [
+      { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/icon-light-32x32.png',
+  },
 }
 
 export default function RootLayout({

@@ -90,3 +90,10 @@ To enable live multimodal packaging extraction:
    GEMMA_API_ENDPOINT=https://api-inference.huggingface.co/models/google/paligemma2-3b-pt-224
    ```
 3. If no key is provided, the service returns a safe `CONFIGURATION_ERROR` status rather than generating fake model results.
+
+---
+
+## 5. License
+
+Licensed under the [MIT License](../LICENSE) - Copyright (c) 2026 DawaLens Contributors.
+

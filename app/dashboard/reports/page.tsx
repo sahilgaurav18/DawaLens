@@ -321,18 +321,25 @@ export default function SafetyReportsPage() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 max-w-2xl w-full p-6 space-y-5 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-200 pb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">
-                    {selectedReport.id}
-                  </span>
-                  <span className="text-xs text-slate-500 font-mono">
-                    {selectedReport.timestamp}
-                  </span>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo-mark.png"
+                  alt="DawaLens Logo"
+                  className="h-10 w-10 object-contain shrink-0"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">
+                      {selectedReport.id}
+                    </span>
+                    <span className="text-xs text-slate-500 font-mono">
+                      {selectedReport.timestamp}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mt-0.5">
+                    Clinical Safety Check Evaluation Report
+                  </h3>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mt-1">
-                  Clinical Safety Check Evaluation Report
-                </h3>
               </div>
               <button
                 onClick={() => {

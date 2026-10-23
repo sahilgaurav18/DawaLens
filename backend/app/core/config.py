@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env.local", ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -42,9 +42,23 @@ class Settings(BaseSettings):
     # AI / Vision Model Configuration
     # Supported: "gemma_4", "huggingface", "ollama", "test"
     AI_PROVIDER: str = "gemma_4"
-    GEMMA_MODEL_ID: str = "google/paligemma2-3b-pt-224"
+    GEMMA_MODEL_ID: str = "gemini-3.5-flash-lite"
     GEMMA_API_KEY: str = ""
-    GEMMA_API_ENDPOINT: str = "https://api-inference.huggingface.co/models/google/paligemma2-3b-pt-224"
+    GOOGLE_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    GEMMA_API_ENDPOINT: str = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
+
+    @property
+    def effective_api_key(self) -> str:
+        """Returns the first non-empty API key from GEMMA_API_KEY, GOOGLE_API_KEY, or GEMINI_API_KEY."""
+        return (
+            self.GEMMA_API_KEY
+            or self.GOOGLE_API_KEY
+            or self.GEMINI_API_KEY
+            or os.environ.get("GEMMA_API_KEY", "")
+            or os.environ.get("GOOGLE_API_KEY", "")
+            or os.environ.get("GEMINI_API_KEY", "")
+        ).strip()
 
     # Image upload limits and safeguards
     MAX_UPLOAD_SIZE_MB: int = 15

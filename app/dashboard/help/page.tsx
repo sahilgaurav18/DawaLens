@@ -194,7 +194,7 @@ export default function HelpAndSupportPage() {
                 Privacy & Data Retention Policy
               </h4>
               <p className="text-slate-600 leading-relaxed">
-                Images of medication packaging uploaded to DawaLens are evaluated for character recognition. No persistent retention on public clouds occurs by default. Saved reports and medicines are maintained on your local device client-side and can be wiped instantly in Profile & Settings.
+                Images of medication packaging uploaded to DawaLens are evaluated for character recognition. No persistent retention on public clouds occurs by default. Saved reports and medicines are maintained on your local device client-side with full privacy.
               </p>
             </div>
 

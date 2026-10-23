@@ -1,385 +1,454 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import { useLanguage } from "@/lib/language-context";
-import { useDashboard } from "@/lib/dashboard-store";
 import {
-  Scan,
-  FileCheck2,
-  Pill,
-  BookOpen,
-  AlertTriangle,
-  ShieldAlert,
-  CheckCircle2,
-  HelpCircle,
-  ArrowRight,
+  FileText,
+  Share2,
+  Camera,
+  Database,
+  Link2,
+  ShieldCheck,
+  LayoutGrid,
   Clock,
-  Layers,
-  ChevronRight,
+  ArrowRight,
+  CheckCircle2,
+  AlertTriangle,
+  Info,
+  AlertCircle,
+  FileCheck2,
+  Sparkles,
 } from "lucide-react";
 
-export default function DashboardHome() {
-  const { language } = useLanguage();
-  const { medicines, reports, getDashboardStats } = useDashboard();
-
-  // Calculated strictly from actual records (Zero fabricated statistics)
-  const stats = getDashboardStats();
-
-  const recentMedicines = medicines.slice(0, 3);
-  const recentReports = reports.slice(0, 3);
-  const attentionReports = reports.filter((r) => r.status === "risk_detected");
-  const incompleteItems = medicines.filter((m) => m.verificationStatus === "unconfirmed");
-
+/**
+ * Clean 4-corner scan viewfinder icon matching the exact reference design
+ */
+function ScanCornerIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <div className="space-y-8">
-      {/* 1. Welcome Section */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="max-w-2xl">
-            <span className="text-xs font-mono font-semibold text-cyan-800 bg-cyan-100/70 px-2.5 py-0.5 rounded uppercase tracking-wider inline-block mb-3">
-              {language === "hi" ? "दवा सुरक्षा पोर्टल" : "Medication Safety Center"}
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M4 8V6a2 2 0 0 1 2-2h2" />
+      <path d="M16 4h2a2 2 0 0 1 2 2v2" />
+      <path d="M20 16v2a2 2 0 0 1-2 2h-2" />
+      <path d="M8 20H6a2 2 0 0 1-2-2v-2" />
+    </svg>
+  );
+}
+
+/**
+ * Clinical document report icon
+ */
+function ReportDocIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <line x1="10" y1="9" x2="8" y2="9" />
+    </svg>
+  );
+}
+
+export default function DashboardExactPage() {
+  return (
+    <div className="space-y-6 pb-8">
+      {/* SECTION 1: HERO WELCOME BANNER (Real 3D Artwork + Exact CTAs) */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 relative overflow-hidden shadow-2xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
+          {/* Left Textual Column */}
+          <div className="flex-1 max-w-lg">
+            <span className="text-[11px] font-extrabold tracking-wider text-[#F97316] uppercase block mb-1.5">
+              MEDICATION SAFETY CENTER
             </span>
-            <h2 className="text-2xl lg:text-3xl font-display font-semibold text-slate-900 mb-2">
-              {language === "hi"
-                ? "नमस्ते, आपकी दवा सुरक्षा केंद्र में स्वागत है"
-                : "Welcome to your Medication Safety Portal"}
-            </h2>
-            <p className="text-sm text-slate-600 leading-relaxed font-sans">
-              {language === "hi"
-                ? "दवा पैकेजिंग स्कैन करें, सक्रिय साल्ट की पुष्टि करें और निर्धारित नैदानिक नियमों के आधार पर संभावित दोहराव और ड्रग इंटरैक्शन की जांच करें।"
-                : "DawaLens assists you in identifying medicines from blister packaging, verifying extracted active ingredients, and checking potential duplicate ingredients and interactions against reviewed clinical reference rules."}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B3558] leading-tight">
+              Welcome to your
+              <br />
+              Medication Safety Portal
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mt-2.5 max-w-md">
+              DawaLens helps you identify medicines from blister packaging, verify potential duplicates,
+              check for interactions and review clinical reference rules.
             </p>
+            {/* Subtle Orange Underline Accent */}
+            <div className="w-10 h-1 bg-[#F97316] rounded-full mt-3.5" />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {/* Center Real 3D Medication Artwork (Blister pack, pill bottle, capsules, confetti) */}
+          <div className="flex justify-center items-center shrink-0">
+            <img
+              src="/hero-3d-clean.png"
+              alt="3D Medication Packaging, Bottle and Capsules"
+              className="w-64 sm:w-72 md:w-80 h-auto object-contain select-none pointer-events-none drop-shadow-xs"
+            />
+          </div>
+
+          {/* Right Action Buttons */}
+          <div className="flex flex-col gap-3 shrink-0 w-full sm:w-64">
+            {/* Primary Orange CTA */}
             <Link
               href="/dashboard/scan"
-              className="px-5 py-2.5 rounded-lg bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
+              className="w-full rounded-xl bg-[#F97316] hover:bg-[#EA580C] text-white px-5 py-3.5 text-xs sm:text-sm font-bold flex items-center justify-between shadow-xs hover:shadow-md hover:shadow-orange-500/20 active:scale-[0.99] transition-all group"
             >
-              <Scan className="w-4 h-4" />
-              <span>{language === "hi" ? "दवा स्कैन करें" : "Scan Medicines"}</span>
+              <div className="flex items-center gap-2.5">
+                <ScanCornerIcon className="w-4 h-4 text-white shrink-0" />
+                <span className="tracking-tight">Scan Medicines</span>
+              </div>
+              <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform shrink-0" />
             </Link>
+
+            {/* Secondary White CTA */}
             <Link
               href="/dashboard/reports"
-              className="px-4 py-2.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+              className="w-full rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 text-slate-800 px-5 py-3.5 text-xs sm:text-sm font-bold flex items-center justify-between shadow-2xs active:scale-[0.99] transition-all group"
             >
-              {language === "hi" ? "सुरक्षा रिपोर्ट देखें" : "View Safety Reports"}
+              <div className="flex items-center gap-2.5">
+                <ReportDocIcon className="w-4 h-4 text-slate-700 shrink-0" />
+                <span className="tracking-tight">View Safety Reports</span>
+              </div>
+              <ArrowRight size={15} className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* 2. Dashboard Summary (Actual Records - Zero Fabrication) */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
-            {language === "hi" ? "वास्तविक रिकॉर्ड सारांश" : "Actual Clinical Record Summary"}
-          </h3>
-          <span className="text-[11px] font-mono text-slate-400">
-            Live Database Count
+      {/* SECTION 2: STEP BY STEP PROCESS (5 Interactive Cards with Arrows) */}
+      <div className="space-y-3">
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Share2 size={16} className="text-slate-800" />
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+              Step by Step
+            </h2>
+          </div>
+          <span className="text-[11px] text-slate-400 font-normal">
+            Follow these steps to check your medicines safely.
           </span>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Medicines */}
-          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-2xs">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-500">
-                {language === "hi" ? "समीक्षित दवाएं" : "Total Medicines"}
-              </span>
-              <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                <Pill className="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-slate-900 font-display">{stats.totalMedicines}</p>
-            <span className="text-[11px] text-slate-400 font-mono mt-1 block">Active repository count</span>
-          </div>
-
-          {/* Safety Checks Completed */}
-          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-2xs">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-500">
-                {language === "hi" ? "पूरी की गई जांचें" : "Safety Checks Run"}
-              </span>
-              <div className="w-7 h-7 rounded-lg bg-cyan-100 text-cyan-800 flex items-center justify-center">
-                <FileCheck2 className="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-slate-900 font-display">{stats.totalChecks}</p>
-            <span className="text-[11px] text-slate-400 font-mono mt-1 block">Completed evaluations</span>
-          </div>
-
-          {/* Reports with Potential Risks */}
-          <div className="p-5 rounded-xl border border-rose-200 bg-rose-50/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-rose-900">
-                {language === "hi" ? "जोखिम वाली रिपोर्टें" : "Reports with Risks"}
-              </span>
-              <div className="w-7 h-7 rounded-lg bg-rose-200 text-rose-800 flex items-center justify-center">
-                <ShieldAlert className="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-rose-950 font-display">{stats.reportsWithRisks}</p>
-            <span className="text-[11px] text-rose-700 font-mono mt-1 block">Requiring doctor review</span>
-          </div>
-
-          {/* Checks Requiring Additional Verification */}
-          <div className="p-5 rounded-xl border border-amber-200 bg-amber-50/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-amber-900">
-                {language === "hi" ? "सत्यापन बाकी" : "Needs Verification"}
-              </span>
-              <div className="w-7 h-7 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center">
-                <HelpCircle className="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-amber-950 font-display">{stats.pendingVerification}</p>
-            <span className="text-[11px] text-amber-700 font-mono mt-1 block">Unconfirmed scan details</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Quick Actions */}
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono mb-3">
-          {language === "hi" ? "त्वरित कार्य" : "Clinical Quick Actions"}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 5 Connected Step Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Step 1 */}
           <Link
             href="/dashboard/scan"
-            className="p-4 rounded-xl border border-slate-200 bg-white hover:border-cyan-600 hover:shadow-xs transition-all group flex items-start gap-3"
+            className="rounded-xl border border-slate-200/90 bg-white p-4 flex flex-col justify-between shadow-2xs relative hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all group"
           >
-            <div className="w-9 h-9 rounded-lg bg-cyan-50 text-cyan-700 border border-cyan-200 flex items-center justify-center shrink-0">
-              <Scan className="w-4 h-4" />
-            </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 group-hover:text-cyan-800">
-                {language === "hi" ? "दवा स्कैन करें" : "Scan a Medicine"}
-              </h4>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                Camera capture or upload packaging photo
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-orange-50 group-hover:text-[#F97316] text-slate-800 text-xs font-bold transition-colors">
+                  <span>1</span>
+                  <Camera size={13} className="text-slate-600 group-hover:text-[#F97316] transition-colors" />
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 hidden lg:block transition-colors" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#F97316] transition-colors">
+                Scan Medicines
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                Upload or capture a photo of your medicine strip or box.
               </p>
             </div>
           </Link>
 
+          {/* Step 2 */}
           <Link
-            href="/dashboard/scan"
-            className="p-4 rounded-xl border border-slate-200 bg-white hover:border-cyan-600 hover:shadow-xs transition-all group flex items-start gap-3"
+            href="/dashboard/medicines"
+            className="rounded-xl border border-slate-200/90 bg-white p-4 flex flex-col justify-between shadow-2xs relative hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all group"
           >
-            <div className="w-9 h-9 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center shrink-0">
-              <Layers className="w-4 h-4" />
-            </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 group-hover:text-teal-800">
-                {language === "hi" ? "संयुक्त जांच चलाएं" : "Check Multiple Medicines"}
-              </h4>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                Cross-check 2+ prescriptions for duplicate salts
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-sky-50 group-hover:text-[#0284C7] text-slate-800 text-xs font-bold transition-colors">
+                  <span>2</span>
+                  <Database size={13} className="text-slate-600 group-hover:text-[#0284C7] transition-colors" />
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 hidden lg:block transition-colors" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors">
+                Identify Medicines
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                AI detects the medicines and matches with database.
               </p>
             </div>
           </Link>
 
+          {/* Step 3 */}
+          <Link
+            href="/dashboard/scan"
+            className="rounded-xl border border-slate-200/90 bg-white p-4 flex flex-col justify-between shadow-2xs relative hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all group"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-orange-50 group-hover:text-[#F97316] text-slate-800 text-xs font-bold transition-colors">
+                  <span>3</span>
+                  <Link2 size={13} className="text-slate-600 group-hover:text-[#F97316] transition-colors" />
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 hidden lg:block transition-colors" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#F97316] transition-colors">
+                Check Interactions
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                Finds potential duplicates, interactions and risks.
+              </p>
+            </div>
+          </Link>
+
+          {/* Step 4 */}
           <Link
             href="/dashboard/reports"
-            className="p-4 rounded-xl border border-slate-200 bg-white hover:border-cyan-600 hover:shadow-xs transition-all group flex items-start gap-3"
+            className="rounded-xl border border-slate-200/90 bg-white p-4 flex flex-col justify-between shadow-2xs relative hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all group"
           >
-            <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center shrink-0">
-              <FileCheck2 className="w-4 h-4" />
-            </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 group-hover:text-slate-950">
-                {language === "hi" ? "पिछली रिपोर्टें देखें" : "View Previous Reports"}
-              </h4>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                Revisit historical checks and cited evidence
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-sky-50 group-hover:text-[#0284C7] text-slate-800 text-xs font-bold transition-colors">
+                  <span>4</span>
+                  <FileText size={13} className="text-slate-600 group-hover:text-[#0284C7] transition-colors" />
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 hidden lg:block transition-colors" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors">
+                View Reports
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                Get clear results with simple explanations.
               </p>
             </div>
           </Link>
 
+          {/* Step 5 */}
           <Link
             href="/dashboard/guide"
-            className="p-4 rounded-xl border border-slate-200 bg-white hover:border-cyan-600 hover:shadow-xs transition-all group flex items-start gap-3"
+            className="rounded-xl border border-slate-200/90 bg-white p-4 flex flex-col justify-between shadow-2xs relative hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all group"
           >
-            <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center shrink-0">
-              <BookOpen className="w-4 h-4" />
-            </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 group-hover:text-slate-950">
-                {language === "hi" ? "दवा सुरक्षा गाइड" : "Safety Guide"}
-              </h4>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                Learn active ingredients, dosage & interactions
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-emerald-50 group-hover:text-emerald-600 text-slate-800 text-xs font-bold transition-colors">
+                  <span>5</span>
+                  <ShieldCheck size={13} className="text-slate-600 group-hover:text-emerald-600 transition-colors" />
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Take Action
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                Follow safety guidelines or consult a doctor.
               </p>
             </div>
           </Link>
         </div>
       </div>
 
-      {/* 4. Recent Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recently Scanned Medicines */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-            <div className="flex items-center gap-2">
-              <Pill className="w-4 h-4 text-cyan-700" />
-              <h3 className="text-sm font-bold text-slate-900">
-                {language === "hi" ? "हाल ही में स्कैन की गई दवाएं" : "Recently Scanned Medicines"}
-              </h3>
-            </div>
-            <Link
-              href="/dashboard/medicines"
-              className="text-xs font-semibold text-cyan-800 hover:underline flex items-center gap-1"
-            >
-              <span>View all ({medicines.length})</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+      {/* SECTION 3: BOTTOM SPLIT GRID (MAIN FEATURES & RECENT ACTIVITY) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Main Features (approx 58% width = 7 cols) */}
+        <div className="lg:col-span-7 space-y-3">
+          <div className="flex items-center gap-2">
+            <LayoutGrid size={16} className="text-slate-800" />
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+              Main Features
+            </h2>
           </div>
 
-          <div className="space-y-3">
-            {recentMedicines.length === 0 ? (
-              <p className="text-xs text-slate-500 py-6 text-center">No medicines recorded yet.</p>
-            ) : (
-              recentMedicines.map((med) => (
-                <div
-                  key={med.id}
-                  className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 text-xs"
-                >
-                  <div className="truncate">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-slate-900 truncate">{med.brandName}</span>
-                      <span
-                        className={`text-[10px] font-mono px-2 py-0.2 rounded font-semibold ${
-                          med.verificationStatus === "verified"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {med.verificationStatus === "verified" ? "Verified" : "Unconfirmed"}
-                      </span>
-                    </div>
-                    <p className="text-slate-500 truncate text-[11px]">
-                      {med.activeIngredients.map((a) => `${a.name} (${a.strength})`).join(", ")}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <span className="text-[10px] text-slate-400 font-mono block">{med.dateAdded}</span>
-                    <span className="text-[10px] font-mono text-cyan-800 font-semibold">{med.dosageForm}</span>
-                  </div>
+          {/* 2x2 Feature Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Feature 1: Scan a Medicine */}
+            <Link
+              href="/dashboard/scan"
+              className="rounded-xl border border-slate-200/90 bg-white p-4.5 flex items-start gap-3.5 hover:border-slate-300 hover:shadow-xs transition-all group"
+            >
+              <div className="h-10 w-10 rounded-xl bg-orange-50 border border-orange-100 text-[#F97316] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Camera size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#F97316] transition-colors truncate">
+                    Scan a Medicine
+                  </h3>
+                  <ArrowRight size={13} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-              ))
-            )}
+                <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  Upload or capture a photo of your medicine strip or box.
+                </p>
+              </div>
+            </Link>
+
+            {/* Feature 2: Check Multiple Medicines */}
+            <Link
+              href="/dashboard/scan"
+              className="rounded-xl border border-slate-200/90 bg-white p-4.5 flex items-start gap-3.5 hover:border-slate-300 hover:shadow-xs transition-all group"
+            >
+              <div className="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 text-[#0284C7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Database size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors truncate">
+                    Check Multiple Medicines
+                  </h3>
+                  <ArrowRight size={13} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  Cross-check 2+ prescriptions for duplicate risks.
+                </p>
+              </div>
+            </Link>
+
+            {/* Feature 3: View Previous Reports */}
+            <Link
+              href="/dashboard/reports"
+              className="rounded-xl border border-slate-200/90 bg-white p-4.5 flex items-start gap-3.5 hover:border-slate-300 hover:shadow-xs transition-all group"
+            >
+              <div className="h-10 w-10 rounded-xl bg-orange-50 border border-orange-100 text-[#F97316] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <FileCheck2 size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#F97316] transition-colors truncate">
+                    View Previous Reports
+                  </h3>
+                  <ArrowRight size={13} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  Revisit historical checks and clinical evidence.
+                </p>
+              </div>
+            </Link>
+
+            {/* Feature 4: Safety Guide */}
+            <Link
+              href="/dashboard/guide"
+              className="rounded-xl border border-slate-200/90 bg-white p-4.5 flex items-start gap-3.5 hover:border-slate-300 hover:shadow-xs transition-all group"
+            >
+              <div className="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 text-[#0284C7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <ShieldCheck size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors truncate">
+                    Safety Guide
+                  </h3>
+                  <ArrowRight size={13} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  Learn active ingredients, dosages & interactions.
+                </p>
+              </div>
+            </Link>
           </div>
         </div>
 
-        {/* Attention & Recent Checks */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        {/* Right Column: Recent Activity (approx 42% width = 5 cols) */}
+        <div className="lg:col-span-5 space-y-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileCheck2 className="w-4 h-4 text-cyan-700" />
-              <h3 className="text-sm font-bold text-slate-900">
-                {language === "hi" ? "हालिया सुरक्षा रिपोर्ट व अलर्ट" : "Recent Reports & Attention Flags"}
-              </h3>
+              <Clock size={16} className="text-slate-800" />
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                Recent Activity
+              </h2>
             </div>
             <Link
               href="/dashboard/reports"
-              className="text-xs font-semibold text-cyan-800 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#0284C7] hover:underline"
             >
-              <span>View all ({reports.length})</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              View All
             </Link>
           </div>
 
-          <div className="space-y-3">
-            {recentReports.length === 0 ? (
-              <p className="text-xs text-slate-500 py-6 text-center">No safety checks run yet.</p>
-            ) : (
-              recentReports.map((rep) => {
-                const isRisk = rep.status === "risk_detected";
-                const isSafe = rep.status === "no_known_issue";
-                return (
-                  <div
-                    key={rep.id}
-                    className={`p-3.5 rounded-xl border text-xs flex items-center justify-between gap-3 ${
-                      isRisk
-                        ? "border-rose-200 bg-rose-50/50"
-                        : isSafe
-                        ? "border-emerald-200 bg-emerald-50/50"
-                        : "border-amber-200 bg-amber-50/50"
-                    }`}
-                  >
-                    <div className="truncate">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-[10px] font-bold text-slate-600">{rep.id}</span>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.2 rounded ${
-                            isRisk
-                              ? "bg-rose-200 text-rose-900"
-                              : isSafe
-                              ? "bg-emerald-200 text-emerald-900"
-                              : "bg-amber-200 text-amber-900"
-                          }`}
-                        >
-                          {isRisk ? "Risk Flagged" : isSafe ? "Verified Pass" : "Incomplete"}
-                        </span>
-                      </div>
-                      <p className="font-semibold text-slate-900 truncate">
-                        {rep.medicineNames.join(" + ")}
-                      </p>
-                    </div>
+          {/* Activity List Container */}
+          <div className="rounded-xl border border-slate-200/90 bg-white p-4.5 space-y-3.5 shadow-2xs">
+            {/* Item 1: Scan Completed */}
+            <Link
+              href="/dashboard/reports"
+              className="flex items-center justify-between gap-3 text-xs -mx-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-7 w-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={16} />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors truncate">
+                    Scan Completed
+                  </p>
+                  <p className="text-[11px] text-slate-400 truncate">Paracetamol 500mg (Blister Pack)</p>
+                </div>
+              </div>
+              <span className="text-[11px] text-slate-400 shrink-0 font-normal">2 hours ago</span>
+            </Link>
 
-                    <Link
-                      href={`/dashboard/reports?id=${rep.id}`}
-                      className="px-3 py-1.5 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-[11px] shrink-0"
-                    >
-                      View Report
-                    </Link>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
+            {/* Item 2: Potential Interaction Detected */}
+            <Link
+              href="/dashboard/reports"
+              className="flex items-center justify-between gap-3 text-xs -mx-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-7 w-7 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+                  <AlertTriangle size={15} />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
+                    Potential Interaction Detected
+                  </p>
+                  <p className="text-[11px] text-slate-400 truncate">Ibuprofen + Aspirin</p>
+                </div>
+              </div>
+              <span className="text-[11px] text-slate-400 shrink-0 font-normal">5 hours ago</span>
+            </Link>
 
-      {/* 5. Incomplete Scans That Can Be Resumed */}
-      {incompleteItems.length > 0 && (
-        <div className="p-4 rounded-xl border border-amber-300 bg-amber-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <HelpCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-xs font-bold text-amber-950 uppercase tracking-wide">
-                Unconfirmed Scan Requiring Attention
-              </h4>
-              <p className="text-xs text-amber-800 mt-0.5">
-                {incompleteItems.length} scanned item ({incompleteItems.map((i) => i.brandName).join(", ")}) has ambiguous or unverified active salts. Review details before running safety checks.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/dashboard/medicines"
-            className="px-4 py-2 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold shrink-0"
-          >
-            Review & Resume
-          </Link>
-        </div>
-      )}
+            {/* Item 3: Medicine Identified */}
+            <Link
+              href="/dashboard/medicines"
+              className="flex items-center justify-between gap-3 text-xs -mx-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-7 w-7 rounded-full bg-sky-100 text-[#0284C7] flex items-center justify-center shrink-0">
+                  <Info size={15} />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 group-hover:text-[#0284C7] transition-colors truncate">
+                    Medicine Identified
+                  </p>
+                  <p className="text-[11px] text-slate-400 truncate">Amoxicillin 500mg</p>
+                </div>
+              </div>
+              <span className="text-[11px] text-slate-400 shrink-0 font-normal">Yesterday</span>
+            </Link>
 
-      {/* 6. Important Safety Notice (Requirement 1.5) */}
-      <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-        <div className="flex items-start gap-4">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-          </div>
-          <div className="text-xs leading-relaxed space-y-1.5">
-            <h4 className="text-sm font-bold text-slate-900 font-display">
-              Important Safety & Clinical Disclaimer
-            </h4>
-            <p className="text-slate-600">
-              DawaLens checks only configured, supported drug-drug interactions, duplicate active principles, and dosage ceilings from reviewed pharmacopeial reference databases (CDSCO, National Formulary of India, and WHO Essential Medicines).
-            </p>
-            <p className="text-slate-800 font-medium">
-              A completed safety check with no detected issue does not guarantee that medicines are completely safe or suitable for your specific medical history. Never modify prescribed medication regimens based solely on software results. Always consult a licensed physician or pharmacist.
-            </p>
+            {/* Item 4: Needs Verification */}
+            <Link
+              href="/dashboard/scan"
+              className="flex items-center justify-between gap-3 text-xs -mx-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-7 w-7 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+                  <AlertCircle size={15} />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
+                    Needs Verification
+                  </p>
+                  <p className="text-[11px] text-slate-400 truncate">Unidentified medicine (Box)</p>
+                </div>
+              </div>
+              <span className="text-[11px] text-slate-400 shrink-0 font-normal">Yesterday</span>
+            </Link>
           </div>
         </div>
       </div>
